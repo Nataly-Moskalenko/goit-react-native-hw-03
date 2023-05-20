@@ -5,9 +5,11 @@ import {
   TextInput,
   View,
   TouchableWithoutFeedback,
-  Keyboard, 
+  Keyboard,
+  Pressable,
 } from 'react-native';
 import { ButtonLogin } from '../Components/Button';
+import { useTogglePasswordVisibility } from '../../hooks/useTogglePasswordVisibility';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -19,28 +21,41 @@ export default function LoginScreen() {
     console.log(`Email: ${email}, Password: ${password}`);
   };
 
+  const { passwordVisibility, visibility, handlePasswordVisibility } =
+    useTogglePasswordVisibility();
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>      
-          <Text style={styles.title}>Log In</Text>
-          <TextInput
-            placeholder="Email"
-            onChangeText={(newEmail) => setEmail(newEmail)}
-            value={email}
-            style={emailFocus ? styles.inputOnFocus : styles.input}
-            onFocus={() => setEmailFocus(true)}
-            onBlur={() => setEmailFocus(false)}
-          />
-          <TextInput
-            placeholder="Password"
-            onChangeText={(newPassword) => setPassword(newPassword)}
-            value={password}
-            style={passwordFocus ? styles.passwordOnFocus : styles.password}
-            onFocus={() => setPasswordFocus(true)}
-            onBlur={() => setPasswordFocus(false)}
-          />
-          <ButtonLogin onPress={onPress} />
-          <Text style={styles.text}>Do you have no account? Sign Up</Text>       
+      <View style={styles.container}>
+        <Text style={styles.title}>Log In</Text>
+        <TextInput
+          placeholder="Email"
+          onChangeText={(newEmail) => setEmail(newEmail)}
+          value={email}
+          style={emailFocus ? styles.inputOnFocus : styles.input}
+          onFocus={() => setEmailFocus(true)}
+          onBlur={() => setEmailFocus(false)}
+        />
+         <View style={passwordFocus ? styles.passwordOnFocus : styles.password}>
+         <TextInput
+          placeholder="Password"
+          onChangeText={(newPassword) => setPassword(newPassword)}
+          value={password}
+          secureTextEntry={passwordVisibility}
+          autoCorrect={false}
+          style={styles.passwordField}
+          // enablesReturnKeyAutomatically
+          // style={passwordFocus ? styles.passwordOnFocus : styles.password}
+          onFocus={() => setPasswordFocus(true)}
+          onBlur={() => setPasswordFocus(false)}
+        />
+        <Pressable onPress={handlePasswordVisibility}>
+            <Text>{visibility}</Text>
+          </Pressable>
+         </View>
+        
+        <ButtonLogin onPress={onPress} />
+        <Text style={styles.text}>Do you have no account? Sign Up</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -101,7 +116,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F6F6F6',
     borderColor: '#E8E8E8',
     borderRadius: 8,
-    marginBottom: 43,
+    marginBottom: 43,   
+    width: '100%',
+    flexDirection: 'row',
   },
   passwordOnFocus: {
     borderColor: '#FF6C00',
@@ -114,7 +131,12 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     color: '#212121',
     backgroundColor: '#F6F6F6',
-    borderRadius: 8,
+    borderRadius: 8,   
+    width: '100%',
+    flexDirection: 'row',
+  },
+  passwordField: {
+    width: '90%',
   },
   text: {
     marginTop: 16,

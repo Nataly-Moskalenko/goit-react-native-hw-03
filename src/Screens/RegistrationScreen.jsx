@@ -5,9 +5,11 @@ import {
   TextInput,
   View,
   TouchableWithoutFeedback,
-  Keyboard,  
+  Keyboard,
+  Pressable, 
 } from 'react-native';
 import { ButtonSingup } from '../Components/Button';
+import { useTogglePasswordVisibility } from '../../hooks/useTogglePasswordVisibility';
 
 export default function RegistrationScreen() {
   const [login, setLogin] = useState('');
@@ -17,40 +19,53 @@ export default function RegistrationScreen() {
   const [emailFocus, setEmailFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
 
+  const { passwordVisibility, visibility, handlePasswordVisibility } =
+    useTogglePasswordVisibility();
+
   const onPress = () => {
     console.log(`Login: ${login}, Email: ${email}, Password: ${password}`);
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>       
-          <Text style={styles.title}>Registration</Text>
-          <TextInput
-            placeholder="Login"
-            onChangeText={(newLogin) => setLogin(newLogin)}
-            value={login}
-            style={loginFocus ? styles.inputOnFocus : styles.input}
-            onFocus={() => setLoginFocus(true)}
-            onBlur={() => setLoginFocus(false)}
-          />
-          <TextInput
-            placeholder="Email"
-            onChangeText={(newEmail) => setEmail(newEmail)}
-            value={email}
-            style={emailFocus ? styles.inputOnFocus : styles.input}
-            onFocus={() => setEmailFocus(true)}
-            onBlur={() => setEmailFocus(false)}
-          />
+      <View style={styles.container}>
+        <Text style={styles.title}>Registration</Text>
+        <TextInput
+          placeholder="Login"
+          onChangeText={(newLogin) => setLogin(newLogin)}
+          value={login}
+          style={loginFocus ? styles.inputOnFocus : styles.input}
+          onFocus={() => setLoginFocus(true)}
+          onBlur={() => setLoginFocus(false)}
+        />
+        <TextInput
+          placeholder="Email"
+          onChangeText={(newEmail) => setEmail(newEmail)}
+          value={email}
+          style={emailFocus ? styles.inputOnFocus : styles.input}
+          onFocus={() => setEmailFocus(true)}
+          onBlur={() => setEmailFocus(false)}
+        />
+        <View style={passwordFocus ? styles.passwordOnFocus : styles.password}>
           <TextInput
             placeholder="Password"
             onChangeText={(newPassword) => setPassword(newPassword)}
             value={password}
-            style={passwordFocus ? styles.passwordOnFocus : styles.password}
+            secureTextEntry={passwordVisibility}
+            autoCorrect={false}
+            // enablesReturnKeyAutomatically
+            style={styles.passwordField}
+            // style={passwordFocus ? styles.passwordOnFocus : styles.password}
             onFocus={() => setPasswordFocus(true)}
             onBlur={() => setPasswordFocus(false)}
           />
-          <ButtonSingup onPress={onPress} />
-          <Text style={styles.text}>Do you already have an account? Log In</Text>        
+          <Pressable onPress={handlePasswordVisibility}>
+            <Text>{visibility}</Text>
+          </Pressable>
+        </View>
+
+        <ButtonSingup onPress={onPress} />
+        <Text style={styles.text}>Do you already have an account? Log In</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -113,6 +128,8 @@ const styles = StyleSheet.create({
     borderColor: '#E8E8E8',
     borderRadius: 8,
     marginBottom: 43,
+    width: '100%',
+    flexDirection: 'row',
   },
   passwordOnFocus: {
     borderColor: '#FF6C00',
@@ -126,6 +143,11 @@ const styles = StyleSheet.create({
     color: '#212121',
     backgroundColor: '#F6F6F6',
     borderRadius: 8,
+    width: '100%',
+    flexDirection: 'row',
+  },
+  passwordField: {
+    width: '90%',
   },
   text: {
     marginTop: 16,
